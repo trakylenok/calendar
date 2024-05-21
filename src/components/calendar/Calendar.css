@@ -61,3 +61,7 @@
 .notCurrentMonth {
   color: #aaa;
 }
+
+.hasNotes {
+  border-bottom: 2px solid #ffeb3b;
+}

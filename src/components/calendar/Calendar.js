@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { previousMonth, nextMonth } from "./calendarSlice";
 import {
@@ -9,15 +9,20 @@ import {
   endOfWeek,
   addDays,
   isToday,
+  parseISO,
 } from "date-fns";
+import NoteModal from "./NoteModal";
 import "./Calendar.css";
 
 const daysOfWeek = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
 
 function Calendar() {
   const dispatch = useDispatch();
-  const currentDate = useSelector((state) => state.calendar.currentDate);
+  const currentDateStr = useSelector((state) => state.calendar.currentDate);
+  const notes = useSelector((state) => state.calendar.notes);
+  const [selectedDate, setSelectedDate] = useState(null);
 
+  const currentDate = parseISO(currentDateStr);
   const startMonth = startOfMonth(currentDate);
   const endMonth = endOfMonth(currentDate);
   const startDate = startOfWeek(startMonth, { weekStartsOn: 1 });
@@ -30,6 +35,14 @@ function Calendar() {
     dates.push(day);
     day = addDays(day, 1);
   }
+
+  const handleDayClick = (date) => {
+    setSelectedDate(date);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedDate(null);
+  };
 
   return (
     <div className="calendar">
@@ -53,12 +66,17 @@ function Calendar() {
               date.getMonth() !== currentDate.getMonth()
                 ? "notCurrentMonth"
                 : ""
-            }`}
+            } ${notes[format(date, "yyyy-MM-dd")] ? "hasNotes" : ""}`}
+            onClick={() => handleDayClick(format(date, "yyyy-MM-dd"))}
+            title={notes[format(date, "yyyy-MM-dd")]?.join(", ") || ""}
           >
             {format(date, "d")}
           </div>
         ))}
       </div>
+      {selectedDate && (
+        <NoteModal date={selectedDate} onClose={handleCloseModal} />
+      )}
     </div>
   );
 }

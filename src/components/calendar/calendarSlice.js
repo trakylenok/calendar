@@ -1,8 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { subMonths, addMonths } from "date-fns";
+import { format, addMonths, parseISO } from "date-fns";
+import { createSelector } from "reselect";
+
+const formatDate = (date) => format(date, "yyyy-MM-dd");
 
 const initialState = {
-  currentDate: new Date(),
+  currentDate: formatDate(new Date()),
   notes: {},
 };
 
@@ -11,10 +14,12 @@ const calendarSlice = createSlice({
   initialState,
   reducers: {
     previousMonth(state) {
-      state.currentDate = subMonths(state.currentDate, 1);
+      const date = parseISO(state.currentDate);
+      state.currentDate = formatDate(addMonths(date, -1));
     },
     nextMonth(state) {
-      state.currentDate = addMonths(state.currentDate, 1);
+      const date = parseISO(state.currentDate);
+      state.currentDate = formatDate(addMonths(date, 1));
     },
     addNote(state, action) {
       const { date, note } = action.payload;
@@ -27,4 +32,11 @@ const calendarSlice = createSlice({
 });
 
 export const { previousMonth, nextMonth, addNote } = calendarSlice.actions;
+
+const selectNotes = (state) => state.calendar.notes;
+
+export const selectNotesByDate = createSelector(
+  [selectNotes, (date) => date],
+  (notes, date) => notes[date] || []
+);
 export default calendarSlice.reducer;
