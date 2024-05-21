@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { previousMonth, nextMonth } from "./calendarSlice";
+import { previousMonth, nextMonth } from "../../app/slices/calendarSlice";
 import {
   format,
   startOfMonth,
@@ -11,7 +11,7 @@ import {
   isToday,
   parseISO,
 } from "date-fns";
-import NoteModal from "./NoteModal";
+import NoteModal from "./components/NoteModal";
 import "./Calendar.css";
 
 const daysOfWeek = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];

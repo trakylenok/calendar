@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addNote, selectNotesByDate } from "./calendarSlice";
+import { addNote, selectNotesByDate } from "../../../app/slices/calendarSlice";
 import "./NoteModal.css";
 
 function NoteModal({ date, onClose }) {
