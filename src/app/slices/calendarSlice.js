@@ -36,7 +36,7 @@ export const { previousMonth, nextMonth, addNote } = calendarSlice.actions;
 const selectNotes = (state) => state.calendar.notes;
 
 export const selectNotesByDate = createSelector(
-  [selectNotes, (date) => date],
-  (notes, date) => notes[date] || []
+  [selectNotes, (state, date) => formatDate(parseISO(date))],
+  (notes, formattedDate) => notes[formattedDate] || []
 );
 export default calendarSlice.reducer;
