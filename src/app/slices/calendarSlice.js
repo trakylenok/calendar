@@ -4,7 +4,28 @@ import { createSelector } from "reselect";
 
 const formatDate = (date) => format(date, "yyyy-MM-dd");
 
-const initialState = {
+const loadState = () => {
+  try {
+    const serializedState = localStorage.getItem("calendarState");
+    if (serializedState === null) {
+      return undefined;
+    }
+    return JSON.parse(serializedState);
+  } catch (err) {
+    return undefined;
+  }
+};
+
+const saveState = (state) => {
+  try {
+    const serializedState = JSON.stringify(state);
+    localStorage.setItem("calendarState", serializedState);
+  } catch (err) {
+    console.log('Error', err)
+  }
+};
+
+const initialState = loadState() || {
   currentDate: formatDate(new Date()),
   notes: {},
 };
@@ -36,7 +57,16 @@ export const { previousMonth, nextMonth, addNote } = calendarSlice.actions;
 const selectNotes = (state) => state.calendar.notes;
 
 export const selectNotesByDate = createSelector(
-  [selectNotes, (state, date) => formatDate(parseISO(date))],
-  (notes, formattedDate) => notes[formattedDate] || []
+    [selectNotes, (state, date) => formatDate(parseISO(date))],
+    (notes, formattedDate) => notes[formattedDate] || []
 );
-export default calendarSlice.reducer;
+
+const calendarReducer = calendarSlice.reducer;
+
+const rootReducer = (state, action) => {
+  const newState = calendarReducer(state, action);
+  saveState(newState);
+  return newState;
+};
+
+export default rootReducer;
